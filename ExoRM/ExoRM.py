@@ -20,6 +20,44 @@ def read_rm_data():
 
     return data
 
+class ForecasterRM:
+    log_mode = True
+
+    @classmethod
+    def forecaster(cls, x):
+        if cls.log_mode:
+            x = numpy.power(10, x)
+
+        pass
+
+    @classmethod
+    def terran(cls, x):
+        if cls.log_mode:
+            x = numpy.power(10, x)
+
+        pass
+
+    @classmethod
+    def neptunian(cls, x):
+        if cls.log_mode:
+            x = numpy.power(10, x)
+
+        pass
+
+    @classmethod
+    def jovian(cls, x):
+        if cls.log_mode:
+            x = numpy.power(10, x)
+
+        pass
+
+    @classmethod
+    def stellar(cls, x):
+        if cls.log_mode:
+            x = numpy.power(10, x)
+
+        pass
+
 class ExoRM:
     def __init__(self, model, x, y):
         self.model = model
