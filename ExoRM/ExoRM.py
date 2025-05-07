@@ -1,7 +1,26 @@
-import pickle
 import numpy
+import os
+import pandas
+import pickle
 
-class LogRMModel:
+from platformdirs import user_data_dir
+
+def get_exorm_filepath(relative_filepath):
+    return os.path.join(user_data_dir('ExoRM'), relative_filepath)
+
+def load_model():
+    path = get_exorm_filepath('radius_mass_model.pkl')
+    model = ExoRM.load(path)
+
+    return model
+
+def read_rm_data():
+    path = get_exorm_filepath('exoplanet_rm.csv')
+    data = pandas.read_csv(path)
+
+    return data
+
+class ExoRM:
     def __init__(self, model, x, y):
         self.model = model
         self.model = self.model
@@ -11,10 +30,11 @@ class LogRMModel:
         self.residuals = self.y - self.model(self.x)
         self.x_min, self.x_max, self.y_min, self.y_max = None, None, None, None
 
-        self.calculate_spread()
+        self.calculate_error()
 
-    def calculate_spread(self):
+    def calculate_error(self):
         self.error = numpy.std(self.residuals)
+
         return self.error
 
     def override_min(self, x_min, y_min):

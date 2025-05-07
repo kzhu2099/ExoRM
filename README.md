@@ -1,32 +1,22 @@
-# mywordle
+# ExoRM
 
-mywordle is a library that brings Wordle to Python with exceptional customization and personlization.
+- HomePage: https://github.com/kzhu2099/ExoRM
+- Issues: https://github.com/kzhu2099/ExoRM/issues
 
-Millions of people enjoy Wordle every day online.
-However, people cannot access it on Python, with existing libraries not providing sufficient customization.
-This library brings this game to Python and lets them put their own twist to it.
-
-- HomePage: https://github.com/kzhu2099/My-Wordle
-- Issues: https://github.com/kzhu2099/My-Wordle/issues
-
-[![PyPI Downloads](https://static.pepy.tech/badge/mywordle)](https://pepy.tech/projects/mywordle)
+[![PyPI Downloads](https://static.pepy.tech/badge/ExoRM)](https://pepy.tech/projects/ExoRM)
 
 Author: Kevin Zhu
 
 ## Features
 
-- Allows users to play Wordle
-- 25,000+ target words of different lengths with 370,000 words available
-- Customization:
-    - challenge mode
-    - number of guesses
-    - length of words
-    - custom word list / guess list
-- Helpful layout
+- continuous radius-mass relationship
+- smooth with lower residuals
+- simple usage, log10 and linear
+- best-fit for Terran, Neptunian, and Jovian
 
 ## Installation
 
-To install mywordle, use pip: ```pip install mywordle```.
+To install ExoRM, use pip: ```pip install ExoRM```.
 
 However, many prefer to use a virtual environment.
 
@@ -41,9 +31,9 @@ cd /path/to/your/directory
 pip install virtualenv
 python3 -m venv .venv
 
-# install mywordle
+# install ExoRM
 source .venv/bin/activate
-pip install mywordle
+pip install ExoRM
 
 deactivate # when you are completely done
 ```
@@ -59,109 +49,30 @@ cd C:path\to\your\directory
 pip install virtualenv
 python3 -m venv .venv
 
-# install mywordle
+# install ExoRM
 .venv\Scripts\activate
-pip install mywordle
+pip install ExoRM
 
 deactivate # when you are completely done
 ```
 
-## Information
+## Usage
 
-Wordle is a game that is now owned by the NYT.
-The aim is to guess a 5-letter word within 6 attempts.
-When you guess the word, you will be given a color-coded result with the following key:
+To first begin using ExoRM, the data and model must be initialized. This is due to the constant discovery of new exoplanets, adding to the data.
 
-- Green is the correct letter in the correct spot
-- Yellow is the correct letter but it is in a different spot
-- Gray/White means that the letter is not in the word.
+Furthermore, this requires periodic updating to include the most recent information.
 
-## Basic Gameplay
+Simply run `process_data.py` and `initialize_model.py`. Both are stored in your OS's Application Data for ExoRM. ExoRM provides built in functions to retrieve from this folder.
 
-This game aims to mimic Wordle with thousands of available words.
-To use it is very simple! Simply run:
+To use the model, call `ExoRM.load_model()` which returns the model from the filepath. If you wish, you may use `model.save(...)` to save it to your own directory.
 
-```python
-from mywordle import Wordle
+The model supports log10 and linear scale in earth radii. When using the `model(), .__call__(), or .predict()`, the log10 scale is used. Linear predictions are used in `.predict_linear()`.
 
-game = Wordle()
-game.play()
-```
+The high amount of uncertainty can be accessed from ExoRM. There is only log10 uncertainty due to the linear scale's differences, which may be accessed through `.calculate_error()` for the most recent values or `.error` for the value calculated at initialization.
 
-Guesses and words are not case sensitive.
+ExoRM's data limitations required overrides for certain areas. By default, `override_min()` and `override_max()` are set to the inverse power law relationship found by Chen and kipping (2017). The transition points to those are smooth and are calculated to be the closest intersection between the model and the relationship.
 
-You may pass in a ```target_word``` for the target, as long as it is part of ```self.word_list```, which includes words of any length.
-
-```self.word_list``` is a list of words that are starting points for the random generation.
-
-```self.guess_list``` is a list of words that players may use to guess with.
-
-To check if a word falls into either list, use ```is_valid_word``` or ```is_valid_guess```
-
-This means that you can guess with ```xylyl``` but it won't ever appear unless if you use ```game.play('xylyl')```.
-
-Finally, for an extra challenge, set ```challenge_mode = True``` in ```play()``` which requires you to follow all clues given in previous words.
-
-See examples for more information on how to use the game.
-
-## Customization
-
-Wordle has many variants, and this library's distinction is customization.
-
-You may alter ```num_guesses``` to be a different amount, like 7.
-
-If ```target_word``` is not in ```self.word_list```, you may set ```allow_any_word = True``` to allow any string of characters.
-
-For example, if you want to have the word ```abcdefgh```, guessed, you may do the following:
-
-```python
-game.play('abcdefgh', num_guesses = 7, allow_any_word = True)
-```
-
-Or, if you want all 8 letter words in the default list, you may play like so:
-
-```python
-game = Wordle()
-game.play(word_length = 8)
-```
-
-```word_length``` pulls from ```self.word_list``` and takes a random word with the value provided.
-If ```target_word``` is passed with this, word_length is ignored.
-
-You can input your own ```word_list``` and/or ```guess_list``` for most control.
-
-```word_list```: This is a list of words from which the target word will be randomly selected.
-The words in this list can have varying lengths.
-
-When provided, ```self.words``` is overidden and becomes this..
-```guess_list```: If ```word_list``` is provided, this must include the entirety of that list.
-Otherwise, it serves as additional words that are valid guesses to the default.
-
-If ```guess_list``` is an empty list, any word can be a guess.
-If ```word_list``` is an empty list, both must be an empty list.
-This is equivalent of always having ```play(allow_any_word = True ... )```, but you MUST provide a ```target_word```.
-
-For example, if you have a list of your own words that you want to use, you can have the following:
-
-```python
-game = Wordle(['magazine', 'apples', 'oranges'], []) # allows any guesses to be made
-game = Wordle(['magazine', 'apples', 'oranges'], ['magazine', 'apples', 'oranges', ...]) # restricts guesses to the guess_list
-game.play()
-
-game2 = Wordle([], []) # allows any word to be the target and any word to be guessed, but you must provide the a target_word
-game2.play('custom')
-```
-
-Because though the word lengths may be different, the word length must be given away, which can be an indicator of what the word is.
-
-You may also pass in ```word_length``` in ```play()```. Usually, it defaults to 5. If there is a ```word_list```, it defaults to ```None```, picking any word from ```self.words```.
-
-Ensure that the player doesn't have access to the list or it is sufficiently large enough.
-
-## Disclaimer
-
-This project is a personal and non-commercial recreation of the popular Wordle game. The Wordle game is owned and operated by The New York Times (NYT). This library is intended for personal, educational, and entertainment use only. The library mimics the behavior of the official game but does not include any of the official NYT branding, features, or content. The use of this library is strictly for non-commercial purposes. By using this library, you acknowledge that you are responsible for complying with any applicable laws regarding personal and non-commercial use. The author and contributors do not hold any rights to the Wordle name, game, or related intellectual property.
-
+An example is seen in the `example.ipynb`.
 ## License
 
 The License is an MIT License found in the LICENSE file.
