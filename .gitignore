@@ -1,0 +1,15 @@
+.venv/
+
+__pycache__/
+*.pyc
+*.pyo
+
+build/
+dist/
+*.egg-info/
+tests/
+
+.DS_Store  # macOS
+Thumbs.db  # Windows
+
+.vscode
