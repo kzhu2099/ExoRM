@@ -115,7 +115,7 @@ class ExoRM:
 
     def __call__(self, x):
         values = self.model(x)
-        ForecasterRM.log_mode = True
+        ForecasterRM.log_mode = self.log_mode
 
         if self.x_min is not None:
             values = numpy.where(x < self.x_min, ForecasterRM.terran(x), values)
