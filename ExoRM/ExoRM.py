@@ -33,7 +33,7 @@ def unique_radius(data):
 def preprocess_data(data):
     data['density'] = data['mass'] / data['radius'] ** 3
     data = data[data['density'] < numpy.percentile(data['density'], 99)].reset_index(drop = True)
-    
+
     return data
 
 class ForecasterRM:
