@@ -73,6 +73,7 @@ The high amount of uncertainty can be accessed from ExoRM. There is only log10 u
 ExoRM's data limitations required overrides for certain areas. By default, `override_min()` and `override_max()` are set to the inverse power law relationship found by Chen and kipping (2017). The transition points to those are smooth and are calculated to be the closest intersection between the model and the relationship.
 
 An example is seen in the `example.ipynb`.
+
 ## License
 
 The License is an MIT License found in the LICENSE file.

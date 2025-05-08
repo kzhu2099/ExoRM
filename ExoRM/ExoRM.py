@@ -20,6 +20,22 @@ def read_rm_data():
 
     return data
 
+def unique_radius(data):
+    counts = []
+    for i in range(len(data['radius'])):
+        while data.loc[i, 'radius'] in counts:
+            data.loc[i, 'radius'] += 1e-6
+
+        counts.append(data.loc[i, 'radius'])
+
+    return data.sort_values('radius').reset_index(drop = True)
+
+def preprocess_data(data):
+    data['density'] = data['mass'] / data['radius'] ** 3
+    data = data[data['density'] < numpy.percentile(data['density'], 99)].reset_index(drop = True)
+    
+    return data
+
 class ForecasterRM:
     log_mode = True
 
@@ -115,7 +131,7 @@ class ExoRM:
 
     def __call__(self, x):
         values = self.model(x)
-        ForecasterRM.log_mode = self.log_mode
+        ForecasterRM.log_mode = True
 
         if self.x_min is not None:
             values = numpy.where(x < self.x_min, ForecasterRM.terran(x), values)

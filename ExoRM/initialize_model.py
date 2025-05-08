@@ -1,31 +1,16 @@
+DEGREE = 2
+SMOOTHING = 280
+
 import matplotlib.pyplot as plot
 import numpy
-import os
-import pandas
-import pickle
 
-from platformdirs import user_data_dir
 from scipy.interpolate import UnivariateSpline
 
-from ExoRM import ExoRM
+from ExoRM import ExoRM, unique_radius, read_rm_data, preprocess_data, ForecasterRM
 
-directory = user_data_dir('ExoRM')
-
-data = pandas.read_csv(os.path.join(directory, 'exoplanet_rm.csv'))
-
-data = data[['radius', 'mass']].dropna().reset_index(drop = True)
-data = data.sort_values('radius').reset_index(drop = True)
-
-counts = []
-result = []
-for i in range(len(data['radius'])):
-    while data.loc[i, 'radius'] in counts:
-        data.loc[i, 'radius'] += 1e-6
-
-    counts.append(data.loc[i, 'radius'])
-
-data = data.sort_values('radius').reset_index(drop = True)
-data = data.reset_index(drop = True)
+data = read_rm_data()
+data = unique_radius(data)
+data = preprocess_data(data)
 
 x = data['radius']
 y = data['mass']
@@ -33,17 +18,14 @@ y = data['mass']
 x = numpy.log10(x)
 y = numpy.log10(y)
 
-# plot.scatter(x, y, s = 0.3)
-# plot.show()
-
-model = UnivariateSpline(x, y, k = 2, s = 335)
+model = UnivariateSpline(x, y, k = DEGREE, s = SMOOTHING)
 model = ExoRM(model, x, y)
 
 x_smooth = numpy.linspace(-0.5, 2, 10000)
 y_smooth = model(x_smooth)
 
-min_crossing = x_smooth[numpy.argmin(numpy.abs(y_smooth - (1 / 0.279) * numpy.log10((10 ** x_smooth) / 1.008)))]
-max_crossing = x_smooth[numpy.argmin(numpy.abs(y_smooth - (1 / 0.881) * numpy.log10((10 ** x_smooth) / 0.00157)))]
+min_crossing = x_smooth[numpy.argmin(numpy.abs(y_smooth - ForecasterRM.terran(x_smooth)))]
+max_crossing = x_smooth[numpy.argmin(numpy.abs(y_smooth - ForecasterRM.stellar(x_smooth)))]
 
 model.override_min(min_crossing, model(min_crossing))
 model.override_max(max_crossing, model(max_crossing))
