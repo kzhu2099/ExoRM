@@ -25,38 +25,68 @@ class ForecasterRM:
 
     @classmethod
     def forecaster(cls, x):
-        if cls.log_mode:
-            x = numpy.power(10, x)
+        if not cls.log_mode:
+            x = numpy.log10(x)
 
-        pass
+        y = numpy.zeros_like(x)
+
+        y = numpy.where(x < numpy.log10(1.23), cls.terran(x), y)
+        y = numpy.where((x >= numpy.log10(1.23)) & (x < numpy.log10(14.3)), cls.neptunian(x), y)
+        y = numpy.where(x >= numpy.log10(14.3), cls.stellar(x), y)
+
+        if not cls.log_mode:
+            return numpy.power(10, y)
+
+        else:
+            return y
 
     @classmethod
     def terran(cls, x):
-        if cls.log_mode:
-            x = numpy.power(10, x)
+        if not cls.log_mode:
+            x = numpy.log10(x)
 
-        pass
+        y = (x - 0.00346) / 0.2790
+        if not cls.log_mode:
+            return numpy.power(10, y)
+
+        else:
+            return y
 
     @classmethod
     def neptunian(cls, x):
-        if cls.log_mode:
-            x = numpy.power(10, x)
+        if not cls.log_mode:
+            x = numpy.log10(x)
 
-        pass
+        y = (x + 0.0925) / 0.589
+        if not cls.log_mode:
+            return numpy.power(10, y)
+
+        else:
+            return y
 
     @classmethod
     def jovian(cls, x):
-        if cls.log_mode:
-            x = numpy.power(10, x)
+        if not cls.log_mode:
+            x = numpy.log10(x)
 
-        pass
+        y = (x - 1.25) / -0.044
+        if not cls.log_mode:
+            return numpy.power(10, y)
+
+        else:
+            return y
 
     @classmethod
     def stellar(cls, x):
-        if cls.log_mode:
-            x = numpy.power(10, x)
+        if not cls.log_mode:
+            x = numpy.log10(x)
 
-        pass
+        y = (x + 2.85) / 0.881
+        if not cls.log_mode:
+            return numpy.power(10, y)
+
+        else:
+            return y
 
 class ExoRM:
     def __init__(self, model, x, y):
@@ -85,15 +115,13 @@ class ExoRM:
 
     def __call__(self, x):
         values = self.model(x)
+        ForecasterRM.log_mode = True
 
         if self.x_min is not None:
-            # cand: -0.24847484748474846, 0.037222357827663796
-            # conf: -0.27340234023402343, -0.012958092354665158
-            values = numpy.where(x < self.x_min, (1 / 0.279) * numpy.log10((10 ** x) / 1.008), values)
+            values = numpy.where(x < self.x_min, ForecasterRM.terran(x), values)
 
         if self.x_max is not None:
-            # cand: -0.28082808280828087, 0.07569592990185732
-            values = numpy.where(x > self.x_max, (1 / 0.881) * numpy.log10((10 ** x) / 0.00157), values)
+            values = numpy.where(x > self.x_max, ForecasterRM.stellar(x), values)
 
         return values
 
