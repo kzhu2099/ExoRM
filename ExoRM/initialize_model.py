@@ -1,5 +1,5 @@
 DEGREE = 2
-SMOOTHING = 280
+SMOOTHING = int(input('Enter smoothing amount (default 280): '))
 
 import matplotlib.pyplot as plot
 import numpy
@@ -32,8 +32,8 @@ model.override_max(max_crossing, model(max_crossing))
 
 y_smooth = model(x_smooth)
 
-# plot.scatter(x, y, s = 0.3)
-# plot.plot(x_smooth, y_smooth)
-# plot.show()
+plot.scatter(x, y, s = 0.3)
+plot.plot(x_smooth, y_smooth)
+plot.show()
 
 model.save('radius_mass_model.pkl')

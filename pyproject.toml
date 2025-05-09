@@ -5,7 +5,7 @@ build-backend = 'setuptools.build_meta'
 [project]
 name = 'ExoRM'
 
-version = '1.0.3'
+version = '1.0.4'
 
 description = 'a model for the mass of an exoplanet given the radius'
 
@@ -13,7 +13,7 @@ authors = [{name = 'Kevin Zhu'}, {email = 'kzhu2099@gmail.com'}]
 maintainers = [{name = 'Kevin Zhu'}, {email = 'kzhu2099@gmail.com'}]
 
 classifiers = [
-    'Development Status :: 4 - Beta',
+    'Development Status :: 4 - Alpha',
 
     'Intended Audience :: Developers',
     'Intended Audience :: End Users/Desktop',
