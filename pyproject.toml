@@ -13,7 +13,7 @@ authors = [{name = 'Kevin Zhu'}, {email = 'kzhu2099@gmail.com'}]
 maintainers = [{name = 'Kevin Zhu'}, {email = 'kzhu2099@gmail.com'}]
 
 classifiers = [
-    'Development Status :: 4 - Alpha',
+    'Development Status :: 5 - Alpha',
 
     'Intended Audience :: Developers',
     'Intended Audience :: End Users/Desktop',
