@@ -29,3 +29,5 @@ def initialize_data():
 
     rm = data[['name', 'radius', 'mass']]
     rm.to_csv(os.path.join(directory, 'exoplanet_rm.csv'), index = False)
+
+initialize_data()

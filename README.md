@@ -62,7 +62,7 @@ To first begin using ExoRM, the data and model must be initialized. This is due 
 
 Furthermore, this requires periodic updating to include the most recent information.
 
-Simply run `process_data.py` and `initialize_model.py`. Model initialization requires a smoothing amount, which is set to 280 but should be increased when there is more data. A plot of the model will be shown for you to see. Both are stored in your OS's Application Data for ExoRM. ExoRM provides built in functions to retrieve from this folder.
+Simply run `initialize_data()` and `initialize_model()`. Model initialization requires a smoothing amount, which is set to 280 but should be increased when there is more data. A plot of the model will be shown for you to see. Both are stored in your OS's Application Data for ExoRM. ExoRM provides built in functions to retrieve from this folder.
 
 To use the model, call `ExoRM.load_model()` which returns the model from the filepath. If you wish, you may use `model.save(...)` to save it to your own directory.
 
