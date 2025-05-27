@@ -1,6 +1,6 @@
 def initialize_model():
     DEGREE = 2
-    SMOOTHING = int(input('Enter smoothing amount (default 280): '))
+    SMOOTHING = int(input('Enter smoothing amount (see README): '))
 
     import matplotlib.pyplot as plot
     import numpy
@@ -22,7 +22,7 @@ def initialize_model():
     model = UnivariateSpline(x, y, k = DEGREE, s = SMOOTHING)
     model = ExoRM(model, x, y)
 
-    x_smooth = numpy.linspace(-0.5, 3, 10000)
+    x_smooth = numpy.linspace(-0.5, 2, 10000)
     y_smooth = model(x_smooth)
 
     min_crossing = x_smooth[numpy.argmin(numpy.abs(y_smooth - ForecasterRM.terran(x_smooth)))]
