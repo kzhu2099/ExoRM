@@ -1,9 +1,9 @@
 def initialize_data():
     from astroquery.ipac.nexsci.nasa_exoplanet_archive import NasaExoplanetArchive
-    from platformdirs import user_data_dir
+    from .ExoRM import get_exorm_filepath
     import os
 
-    directory = user_data_dir('ExoRM')
+    directory = get_exorm_filepath('ExoRM')
     if not os.path.exists(directory):
         os.makedirs(directory)
 
@@ -15,7 +15,7 @@ def initialize_data():
 
     data = table.to_pandas()
 
-    data.to_csv(os.path.join(directory, 'exoplanet_data.csv'), index = False)
+    data.to_csv(get_exorm_filepath('exoplanet_data.csv'), index = False)
 
     # Creating Radius and Mass Data
     data = data[data['pl_controv_flag'] == 0]
@@ -28,4 +28,4 @@ def initialize_data():
     data = data.drop_duplicates(subset = 'pl_name').reset_index(drop = True)
 
     rm = data[['name', 'radius', 'mass']]
-    rm.to_csv(os.path.join(directory, 'exoplanet_rm.csv'), index = False)
+    rm.to_csv(get_exorm_filepath('exoplanet_rm.csv'), index = False)

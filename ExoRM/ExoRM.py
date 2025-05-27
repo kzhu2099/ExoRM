@@ -117,7 +117,7 @@ class ExoRM:
         self.calculate_error()
 
     def calculate_error(self):
-        self.error = numpy.std(self.residuals)
+        self.error = 2 * numpy.std(self.residuals)
 
         return self.error
 

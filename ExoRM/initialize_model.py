@@ -7,7 +7,7 @@ def initialize_model():
 
     from scipy.interpolate import UnivariateSpline
 
-    from ExoRM import ExoRM, unique_radius, read_rm_data, preprocess_data, ForecasterRM
+    from .ExoRM import get_exorm_filepath, ExoRM, unique_radius, read_rm_data, preprocess_data, ForecasterRM
 
     data = read_rm_data()
     data = unique_radius(data)
@@ -37,4 +37,4 @@ def initialize_model():
     plot.plot(x_smooth, y_smooth)
     plot.show()
 
-    model.save('radius_mass_model.pkl')
+    model.save(get_exorm_filepath('radius_mass_model.pkl'))
