@@ -1,4 +1,4 @@
-def initialize_data():
+def get_data():
     from astroquery.ipac.nexsci.nasa_exoplanet_archive import NasaExoplanetArchive
     from ExoRM import get_exorm_filepath
     import os
