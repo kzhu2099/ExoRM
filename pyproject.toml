@@ -5,7 +5,7 @@ build-backend = 'setuptools.build_meta'
 [project]
 name = 'ExoRM'
 
-version = '1.1.2'
+version = '1.1.4'
 
 description = 'a model for the mass of an exoplanet given the radius'
 
@@ -43,6 +43,8 @@ Issues = 'https://github.com/kzhu2099/ExoRM/issues'
 [tool.setuptools.package-data]
 'ExoRM.data' = ['*']
 
+[tool.setuptools.packages.find]
+include = ['ExoRM', 'ExoRM.*']
+
 [tool.setuptools]
-packages = ['ExoRM']
 license-files = []
