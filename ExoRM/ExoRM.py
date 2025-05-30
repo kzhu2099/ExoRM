@@ -24,7 +24,7 @@ def unique_radius(data):
     counts = []
     for i in range(len(data['radius'])):
         while data.loc[i, 'radius'] in counts:
-            data.loc[i, 'radius'] += 1e-6
+            data.loc[i, 'radius'] += 1e-12
 
         counts.append(data.loc[i, 'radius'])
 
@@ -32,7 +32,7 @@ def unique_radius(data):
 
 def preprocess_data(data):
     data['density'] = data['mass'] / data['radius'] ** 3
-    data = data[data['density'] < numpy.percentile(data['density'], 99)].reset_index(drop = True)
+    data = data[~(data['density'] >= numpy.percentile(data['density'], 99))].reset_index(drop = True)
 
     return data
 
