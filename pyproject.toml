@@ -5,7 +5,7 @@ build-backend = 'setuptools.build_meta'
 [project]
 name = 'ExoRM'
 
-version = '1.2.2'
+version = '1.2.3'
 
 description = 'a model for the mass of an exoplanet given the radius'
 
@@ -34,7 +34,7 @@ license = {file = 'LICENSE'}
 
 requires-python = '>= 3.9'
 
-dependencies = ['astropy', 'astroquery', 'matplotlib', 'numpy', 'pandas', 'platformdirs', 'scipy']
+dependencies = ['astroquery', 'matplotlib', 'numpy', 'pandas', 'platformdirs', 'scipy']
 
 [project.urls]
 Homepage = 'https://github.com/kzhu2099/ExoRM'

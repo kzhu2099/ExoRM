@@ -6,7 +6,6 @@ def initialize_model():
     import numpy
 
     from scipy.interpolate import UnivariateSpline
-
     from ExoRM import get_exorm_filepath, ExoRM, unique_radius, read_rm_data, preprocess_data, ForecasterRM
 
     data = read_rm_data()
