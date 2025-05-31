@@ -4,6 +4,7 @@ import pandas
 import pickle
 
 from platformdirs import user_data_dir
+from scipy.interpolate import UnivariateSpline
 
 def get_exorm_filepath(relative_filepath):
     return os.path.join(user_data_dir('ExoRM'), relative_filepath)
@@ -114,12 +115,16 @@ class ExoRM:
         self.residuals = self.y - self.model(self.x)
         self.x_min, self.x_max, self.y_min, self.y_max = None, None, None, None
 
-        self.calculate_error()
+    def create_error_model(self, k, s):
+        self.errors = numpy.abs(self.y - self.model(self.x))
+        mask = self.x > numpy.percentile(self.x, 99) # remove because the sparseness of datam akes it easy to overfit and htus lower errors
+        self.error_model = UnivariateSpline(self.x[~mask], self.errors[~mask], k = k, s = s)
+        self.error = self.error_model
 
-    def calculate_error(self):
-        self.error = numpy.std(self.residuals)
+    def linear_error(self, linear_x):
+        y = self.error_model(numpy.log10(linear_x))
 
-        return self.error
+        return numpy.power(10, y)
 
     def override_min(self, x_min, y_min):
         self.x_min = x_min
@@ -144,7 +149,6 @@ class ExoRM:
     predict = __call__
     def predict_linear(self, linear_x):
         y = self.__call__(numpy.log10(linear_x))
-
         return numpy.power(10, y)
 
     def save(self, filepath):

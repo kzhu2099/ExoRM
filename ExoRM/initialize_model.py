@@ -21,8 +21,9 @@ def initialize_model():
 
     model = UnivariateSpline(x, y, k = DEGREE, s = SMOOTHING)
     model = ExoRM(model, x, y)
+    model.create_error_model(k = DEGREE, s = SMOOTHING / 2)
 
-    x_smooth = numpy.linspace(-0.5, 2, 10000)
+    x_smooth = numpy.linspace(-0.5, 3, 10000)
     y_smooth = model(x_smooth)
 
     min_crossing = x_smooth[numpy.argmin(numpy.abs(y_smooth - ForecasterRM.terran(x_smooth)))]
@@ -32,9 +33,11 @@ def initialize_model():
     model.override_max(max_crossing, model(max_crossing))
 
     y_smooth = model(x_smooth)
-
+    e_smooth = model.error(x_smooth)
     plot.scatter(x, y, s = 0.3)
     plot.plot(x_smooth, y_smooth)
+    plot.plot(x_smooth, y_smooth + e_smooth, color = 'C2')
+    plot.plot(x_smooth, y_smooth - e_smooth, color = 'C2')
     plot.show()
 
     model.save(get_exorm_filepath('radius_mass_model.pkl'))
