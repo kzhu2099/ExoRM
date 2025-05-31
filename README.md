@@ -67,13 +67,13 @@ To first begin using ExoRM, the data and model must be initialized. This is due 
 
 Furthermore, this requires periodic updating to include the most recent information.
 
-Simply run `get_data()` and `initialize_model()`. Note: import those by using `from ExoRM.get_data import get_data()` and `from ExoRM.initialize_model() import initialize_model()`. initialization requires a smoothing amount, which is set to 280 but should be increased when there is more data. A plot of the model will be shown for you to see. Both are stored in your OS's Application Data for ExoRM. ExoRM provides built in functions to retrieve from this folder.
+Simply run `get_data()` and `initialize_model()`. Note: import those by using `from ExoRM.get_data import get_data()` and `from ExoRM.initialize_model() import initialize_model()`. initialization requires a smoothing amount, which is set to 280 (SEE NOTE) but should be increased when there is more data. A plot of the model will be shown for you to see. Both are stored in your OS's Application Data for ExoRM. ExoRM provides built in functions to retrieve from this folder.
 
 To use the model, call `ExoRM.load_model()` which returns the model from the filepath. If you wish, you may use `model.save(...)` to save it to your own directory.
 
 The model supports log10 and linear scale in earth radii. When using the `model(), .__call__(), or .predict()`, the log10 scale is used. Linear predictions are used in `.predict_linear()`.
 
-The high amount of uncertainty can be accessed from ExoRM. There is only log10 uncertainty due to the linear scale's differences, which may be accessed through `.calculate_error()` for the most recent values or `.error` for the value calculated at initialization.
+The high amount of uncertainty can be accessed from ExoRM. We used another Univariate spline to calculate error (abs(residuals)). Because there is high overfitting near the edges of the data, the top 99th percentile is removed. Generally, the log error increase as the log radius increases. Estimate the error by using `model.error([...])` and `model.linear_error([...])`.
 
 ExoRM's data limitations required overrides for certain areas. By default, `override_min()` and `override_max()` are set to the inverse power law relationship found by Chen and kipping (2017). The transition points to those are smooth and are calculated to be the closest intersection between the model and the relationship.
 
