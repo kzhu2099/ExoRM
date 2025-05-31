@@ -71,9 +71,9 @@ Simply run `get_data()` and `initialize_model()`. Note: import those by using `f
 
 To use the model, call `ExoRM.load_model()` which returns the model from the filepath. If you wish, you may use `model.save(...)` to save it to your own directory.
 
-The model supports log10 and linear scale in earth radii. When using the `model(), .__call__(), or .predict()`, the log10 scale is used. Linear predictions are used in `.predict_linear()`.
+The model supports log10 and linear scale in earth radii. When using the `model([...]), .__call__([...]), or .predict([...])`, the log10 scale is used. Linear predictions are used in `.predict_linear([...])`.
 
-The high amount of uncertainty can be accessed from ExoRM. We used another Univariate spline to calculate error (abs(residuals)). Because there is high overfitting near the edges of the data, the top 99th percentile is removed. Generally, the log error increase as the log radius increases. Estimate the error by using `model.error([...])` and `model.linear_error([...])`.
+The high amount of uncertainty can be accessed from ExoRM. We used another Univariate spline to calculate error (abs(residuals)). Also, this spline has the same degree as what you input at the beginning but half the smoothing. Because there is high overfitting near the edges of the data, the top 99th percentile is removed. Generally, the log error increase as the log radius increases. Estimate the error by using `model.error([...])` and `model.linear_error([...])`.
 
 ExoRM's data limitations required overrides for certain areas. By default, `override_min()` and `override_max()` are set to the inverse power law relationship found by Chen and kipping (2017). The transition points to those are smooth and are calculated to be the closest intersection between the model and the relationship.
 
