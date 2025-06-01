@@ -33,7 +33,8 @@ def initialize_model():
 
     y_smooth = model(x_smooth)
     e_smooth = model.error(x_smooth)
-    plot.scatter(x, y, s = 0.3)
+
+    plot.scatter(x, y, s = 0)
     plot.plot(x_smooth, y_smooth)
     plot.plot(x_smooth, y_smooth + e_smooth, color = 'C2')
     plot.plot(x_smooth, y_smooth - e_smooth, color = 'C2')
