@@ -7,14 +7,16 @@ def get_data():
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    # Confirmed Exoplanet Query
+    MASS_FILTER = 0.3
+    RADIUS_FILTER = 0.3
+
     table = NasaExoplanetArchive.query_criteria(
         table = 'PS',
         select = 'pl_name, pl_bmasse, pl_rade, disc_year, pl_controv_flag',
         where = (
             '''soltype='Published Confirmed' AND ''' +
-            '''ABS(pl_bmasseerr1 / pl_bmasse) < 0.5 AND ABS(pl_bmasseerr2 / pl_bmasse) < 0.5 AND ''' +
-            '''ABS(pl_radeerr1 / pl_rade) < 0.2 AND ABS(pl_radeerr2 / pl_rade) < 0.2 ''')
+            f'''ABS(pl_bmasseerr1 / pl_bmasse) < {MASS_FILTER} AND ABS(pl_bmasseerr2 / pl_bmasse) < {MASS_FILTER} AND ''' +
+            f'''ABS(pl_radeerr1 / pl_rade) < {RADIUS_FILTER} AND ABS(pl_radeerr2 / pl_rade) < {RADIUS_FILTER} ''')
     )
 
     data = table.to_pandas()
