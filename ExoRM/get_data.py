@@ -10,7 +10,8 @@ def get_data():
     # Confirmed Exoplanet Query
     table = NasaExoplanetArchive.query_criteria(
         table = 'PS',
-        select = 'pl_name, pl_bmasse, pl_rade, disc_year, pl_controv_flag'
+        select = 'pl_name, pl_bmasse, pl_rade, disc_year, pl_controv_flag',
+        where = '''soltype='Published Confirmed' '''
     )
 
     data = table.to_pandas()
