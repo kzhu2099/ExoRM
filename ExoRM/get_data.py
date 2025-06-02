@@ -7,16 +7,29 @@ def get_data():
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    MASS_FILTER = 0.3
-    RADIUS_FILTER = 0.3
+    MASS_FILTER = 0.25
+    RADIUS_FILTER = 0.1
+
+    MASS_FILTER_EDGE = 0.5
+    RADIUS_FILTER_EDGE = 0.2
 
     table = NasaExoplanetArchive.query_criteria(
         table = 'PS',
         select = 'pl_name, pl_bmasse, pl_rade, disc_year, pl_controv_flag',
         where = (
-            '''soltype='Published Confirmed' AND ''' +
-            f'''ABS(pl_bmasseerr1 / pl_bmasse) < {MASS_FILTER} AND ABS(pl_bmasseerr2 / pl_bmasse) < {MASS_FILTER} AND ''' +
-            f'''ABS(pl_radeerr1 / pl_rade) < {RADIUS_FILTER} AND ABS(pl_radeerr2 / pl_rade) < {RADIUS_FILTER} ''')
+            '''soltype='Published Confirmed' AND (''' +
+            f'''((pl_rade < 1 OR pl_rade > 17.5) AND ''' +
+            f'''ABS(pl_bmasseerr1 / pl_bmasse) < {MASS_FILTER_EDGE} AND ''' +
+            f'''ABS(pl_bmasseerr2 / pl_bmasse) < {MASS_FILTER_EDGE} AND ''' +
+            f'''ABS(pl_radeerr1 / pl_rade) < {RADIUS_FILTER_EDGE} AND ''' +
+            f'''ABS(pl_radeerr2 / pl_rade) < {RADIUS_FILTER_EDGE}) ''' +
+            '''OR ''' +
+            f'''(pl_rade >= 1 AND pl_rade <= 17.5 AND ''' +
+            f'''ABS(pl_bmasseerr1 / pl_bmasse) < {MASS_FILTER} AND ''' +
+            f'''ABS(pl_bmasseerr2 / pl_bmasse) < {MASS_FILTER} AND ''' +
+            f'''ABS(pl_radeerr1 / pl_rade) < {RADIUS_FILTER} AND ''' +
+            f'''ABS(pl_radeerr2 / pl_rade) < {RADIUS_FILTER}))'''
+        )
     )
 
     data = table.to_pandas()

@@ -12,7 +12,7 @@ def initialize_model():
     data = unique_radius(data)
     data = preprocess_data(data)
 
-    recommended = round((len(data) / 1000) * 112)
+    recommended = round((len(data) / 944) * 110)
     SMOOTHING = int(input(f'Recommended value: {recommended}. Enter smoothing amount (see README): '))
 
     x = data['radius']
@@ -21,7 +21,13 @@ def initialize_model():
     x = numpy.log10(x)
     y = numpy.log10(y)
 
-    model = UnivariateSpline(x, y, k = DEGREE, s = SMOOTHING)
+    w = numpy.diff(x)
+    w = numpy.append(w, w[-1])
+    w = numpy.sqrt(w)
+    w /= numpy.mean(w)
+    # w = numpy.where((x > 0.75) & (x < 1.25), w * 0.1, w)
+
+    model = UnivariateSpline(x, y, k = DEGREE, s = SMOOTHING, w = w)
     model = ExoRM(model, x, y)
     model.create_error_model(k = DEGREE, s = SMOOTHING / 2)
 
