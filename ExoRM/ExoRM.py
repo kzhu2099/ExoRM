@@ -21,6 +21,12 @@ def read_rm_data():
 
     return data
 
+def read_exoplanet_data():
+    path = get_exorm_filepath('exoplanet_data.csv')
+    data = pandas.read_csv(path)
+
+    return data
+
 def unique_radius(data):
     counts = []
     for i in range(len(data['radius'])):
