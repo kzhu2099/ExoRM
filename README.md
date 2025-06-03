@@ -79,7 +79,7 @@ The high amount of uncertainty can be accessed from ExoRM. We used another Univa
 
 ExoRM's data limitations required overrides for certain areas. By default, `override_min()` and `override_max()` are set to the inverse power law relationship found by Chen and kipping (2017). The transition points to those are smooth and are calculated to be the closest intersection between the model and the relationship.
 
-An example is seen in the `example.ipynb`.
+An example is seen in the `example.ipynb`. Deep analysis is seen in `deep_analysis.ipynb`, showing statistical results and a comparison with Forecaster.
 
 ## License
 
