@@ -71,6 +71,8 @@ Simply run `get_data()` and `initialize_model()`. Note: import those by using `f
 
 To use the model, call `ExoRM.load_model()` which returns the model from the filepath. If you wish, you may use `model.save(...)` to save it to your own directory.
 
+Note that all files saved are located in `/Users/<username>/Library/Application Support/ExoRM` for macOS and `C:\Users\<username>\AppData\Local\ExoRM\ExoRM` for windows.
+
 The model supports log10 and linear scale in earth radii. When using the `model([...]), .__call__([...]), or .predict([...])`, the log10 scale is used. Linear predictions are used in `.predict_linear([...])`.
 
 The high amount of uncertainty can be accessed from ExoRM. We used another Univariate spline to calculate error (abs(residuals)). Also, this spline has the same degree as what you input at the beginning but half the smoothing. Because there is high overfitting near the edges of the data, the top 99th percentile is removed. Generally, the log error increase as the log radius increases. Estimate the error by using `model.error([...])` and `model.linear_error([...])`. Note that this values is the second standard deviation at a point, calculated by multiplying the spline error by the sqrt of pi / 2.
