@@ -129,7 +129,17 @@ class ExoRM:
         return a * (b ** x)
 
     def error(self, x):
-        return numpy.sqrt(self.error_model(x, *self.params)) * numpy.where((x < min(self.x)) | (x > max(self.x)), 3, 2)
+        x_min, x_max = numpy.min(self.x), numpy.max(self.x)
+        base_sigma = numpy.sqrt(self.error_model(x, *self.params))
+
+        distance = numpy.where(
+            x < x_min, x_min - x,
+            numpy.where(x > x_max, x - x_max, 0)
+        )
+
+        inflation = 2 + numpy.clip(2 * distance, 0, 1)
+
+        return base_sigma * inflation
 
     def linear_error(self, linear_x):
         y = self.error(numpy.log10(linear_x))

@@ -32,7 +32,7 @@ def initialize_model():
     model = ExoRM(model, x, y)
     model.create_error_model()
 
-    x_smooth = numpy.linspace(-0.5, 2.5, 10000)
+    x_smooth = numpy.linspace(-0.5, 2, 10000)
     y_smooth = model(x_smooth)
 
     min_crossing = x_smooth[numpy.argmin(numpy.abs(y_smooth - ForecasterRM.terran(x_smooth)))]
