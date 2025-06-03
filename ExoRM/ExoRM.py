@@ -127,7 +127,7 @@ class ExoRM:
         self.error_model = UnivariateSpline(self.x[~mask], self.errors[~mask], k = k, s = s)
 
     def error(self, x):
-        return 2 * self.error_model(x) * numpy.sqrt(numpy.pi / 2)
+        return self.error_model(x) * numpy.sqrt(numpy.pi / 2) * numpy.where((x < min(self.x)) | (x > max(self.x)), 3, 2)
 
     def linear_error(self, linear_x):
         y = self.error(numpy.log10(linear_x))
