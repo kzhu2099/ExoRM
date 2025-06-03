@@ -7,9 +7,9 @@
 
 Author: Kevin Zhu
 
-NOTE: As of June 2, 2025, the optimal SMOOTHING parameter is ~108, and it will only increase.
+NOTE: As of June 2, 2025, the optimal SMOOTHING parameter is ~111, and it will only increase.
 A rough estimate you may use is:
-(Length of dataset / 1000) * 110, which is what the recommended value is.
+(Length of dataset / 1000) * 115, which is what the recommended value is.
 Feel free to change this number if you find it is not smooth / too smooth.
 
 ## Features

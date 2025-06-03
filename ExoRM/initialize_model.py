@@ -12,7 +12,7 @@ def initialize_model():
     data = unique_radius(data)
     data = preprocess_data(data)
 
-    recommended = round((len(data) / 1000) * 110)
+    recommended = round((len(data) / 1000) * 115)
     SMOOTHING = int(input(f'Recommended value: {recommended}. Enter smoothing amount (see README): '))
 
     x = data['radius']

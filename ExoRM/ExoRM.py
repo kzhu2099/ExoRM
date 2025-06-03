@@ -39,7 +39,7 @@ def unique_radius(data):
 
 def preprocess_data(data):
     data['density'] = data['mass'] / data['radius'] ** 3
-    data = data[~(data['density'] >= numpy.percentile(data['density'], 99))].reset_index(drop = True)
+    data = data[~((data['density'] >= numpy.percentile(data['density'], 99)) | (data['density'] <= numpy.percentile(data['density'], 1)))].reset_index(drop = True)
 
     return data
 
@@ -123,9 +123,7 @@ class ExoRM:
 
     def create_error_model(self):
         self.variances = (self.residuals ** 2)
-
-        mask = self.x > numpy.percentile(self.x, 99)
-        self.params, _ = curve_fit(self.error_model, self.x[~mask], self.variances[~mask], p0 = [1, 1], maxfev = 10000)
+        self.params, _ = curve_fit(self.error_model, self.x, self.variances, p0 = [1, 1], maxfev = 10000)
 
     def error_model(self, x, a, b):
         return a * (b ** x)
