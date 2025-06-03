@@ -123,11 +123,12 @@ class ExoRM:
 
     def create_error_model(self, k, s):
         self.errors = numpy.abs(self.y - self.model(self.x))
+        self.ln_errors = numpy.log(self.errors + 1e-6)  # Avoid log(0) issues
         mask = self.x > numpy.percentile(self.x, 99) # remove because the sparseness of datam akes it easy to overfit and htus lower errors
-        self.error_model = UnivariateSpline(self.x[~mask], self.errors[~mask], k = k, s = s)
+        self.error_model = UnivariateSpline(self.x[~mask], self.ln_errors[~mask], k = k, s = s)
 
     def error(self, x):
-        return self.error_model(x) * numpy.sqrt(numpy.pi / 2) * numpy.where((x < min(self.x)) | (x > max(self.x)), 3, 2)
+        return numpy.exp(self.error_model(x)) * numpy.sqrt(numpy.pi / 2) * numpy.where((x < min(self.x)) | (x > max(self.x)), 3, 2)
 
     def linear_error(self, linear_x):
         y = self.error(numpy.log10(linear_x))

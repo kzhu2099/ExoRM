@@ -30,7 +30,7 @@ def initialize_model():
 
     model = UnivariateSpline(x, y, k = DEGREE, s = SMOOTHING, w = w)
     model = ExoRM(model, x, y)
-    model.create_error_model(k = DEGREE, s = SMOOTHING / 2)
+    model.create_error_model(k = DEGREE, s = len(x) * 10)
 
     x_smooth = numpy.linspace(-0.5, 2.5, 10000)
     y_smooth = model(x_smooth)
@@ -48,6 +48,7 @@ def initialize_model():
     plot.plot(x_smooth, y_smooth, color = 'C1')
     plot.plot(x_smooth, y_smooth + e_smooth, color = 'C2')
     plot.plot(x_smooth, y_smooth - e_smooth, color = 'C2')
+    # plot.plot(x_smooth, e_smooth)
     plot.show()
 
     model.save(get_exorm_filepath('radius_mass_model.pkl'))
