@@ -137,9 +137,9 @@ class ExoRM:
             numpy.where(x > x_max, x - x_max, 0)
         )
 
-        inflation = 2 * numpy.clip(distance + 1, 1, 2) # increases base uncertainty
+        inflation = numpy.clip(distance + 1, 1, 2) # increases base uncertainty
 
-        return base_sigma * inflation
+        return 2 * base_sigma * inflation
 
     def linear_error(self, linear_x):
         y = self.error(numpy.log10(linear_x))
