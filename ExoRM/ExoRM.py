@@ -4,7 +4,7 @@ import pandas
 import pickle
 
 from platformdirs import user_data_dir
-from scipy.interpolate import UnivariateSpline
+from scipy.optimize import curve_fit
 
 def get_exorm_filepath(relative_filepath):
     return os.path.join(user_data_dir('ExoRM'), relative_filepath)
@@ -121,14 +121,17 @@ class ExoRM:
         self.residuals = self.y - self.model(self.x)
         self.x_min, self.x_max, self.y_min, self.y_max = None, None, None, None
 
-    def create_error_model(self, k, s):
-        self.errors = numpy.abs(self.y - self.model(self.x))
-        self.ln_errors = numpy.log(self.errors + 1e-6)  # Avoid log(0) issues
-        mask = self.x > numpy.percentile(self.x, 99) # remove because the sparseness of datam akes it easy to overfit and htus lower errors
-        self.error_model = UnivariateSpline(self.x[~mask], self.ln_errors[~mask], k = k, s = s)
+    def create_error_model(self):
+        self.variances = (self.residuals ** 2)
+
+        mask = self.x > numpy.percentile(self.x, 99)
+        self.params, _ = curve_fit(self.error_model, self.x[~mask], self.variances[~mask], p0 = [1, 1], maxfev = 10000)
+
+    def error_model(self, x, a, b):
+        return a * (b ** x)
 
     def error(self, x):
-        return numpy.exp(self.error_model(x)) * numpy.sqrt(numpy.pi / 2) * numpy.where((x < min(self.x)) | (x > max(self.x)), 4, 3)
+        return numpy.sqrt(self.error_model(x, *self.params)) * numpy.where((x < min(self.x)) | (x > max(self.x)), 3, 2)
 
     def linear_error(self, linear_x):
         y = self.error(numpy.log10(linear_x))

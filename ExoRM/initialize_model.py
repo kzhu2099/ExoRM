@@ -30,7 +30,7 @@ def initialize_model():
 
     model = UnivariateSpline(x, y, k = DEGREE, s = SMOOTHING, w = w)
     model = ExoRM(model, x, y)
-    model.create_error_model(k = DEGREE, s = len(x) * 10)
+    model.create_error_model()
 
     x_smooth = numpy.linspace(-0.5, 2.5, 10000)
     y_smooth = model(x_smooth)
