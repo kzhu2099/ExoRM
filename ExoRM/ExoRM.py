@@ -137,7 +137,7 @@ class ExoRM:
             numpy.where(x > x_max, x - x_max, 0)
         )
 
-        inflation = 2 + numpy.clip(2 * distance, 0, 1)
+        inflation = 2 * numpy.clip(distance + 1, 1, 2) # increases base uncertainty
 
         return base_sigma * inflation
 
