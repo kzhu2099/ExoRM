@@ -32,7 +32,7 @@ def get_data():
         (abs(data['pl_radeerr1'] / data['pl_rade']) < RADIUS_FILTER_EDGE) &
         (abs(data['pl_radeerr2'] / data['pl_rade']) < RADIUS_FILTER_EDGE)
         |
-        ((data['pl_rade'] >= 1) & (data['pl_rade'] <= 17.5)) &
+        ((data['pl_rade'] >= low_bound) & (data['pl_rade'] <= high_bound)) &
         (abs(data['pl_bmasseerr1'] / data['pl_bmasse']) < MASS_FILTER) &
         (abs(data['pl_bmasseerr2'] / data['pl_bmasse']) < MASS_FILTER) &
         (abs(data['pl_radeerr1'] / data['pl_rade']) < RADIUS_FILTER) &
