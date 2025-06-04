@@ -18,7 +18,7 @@ def get_data():
     table = NasaExoplanetArchive.query_criteria(
         table = 'PS',
         select = 'pl_name, pl_bmasse, pl_rade, disc_year, pl_controv_flag, pl_bmasseerr1, pl_bmasseerr2, pl_radeerr1, pl_radeerr2, soltype',
-        where = '''soltype='Published Confirmed' AND pl_bmasse IS NOT NULL AND pl_rade IS NOT NULL AND disc_year > 2000 AND pl_controv_flag = 0'''
+        where = '''soltype='Published Confirmed' AND pl_bmasse IS NOT NULL AND pl_rade IS NOT NULL AND disc_year >= 2000 AND pl_controv_flag = 0'''
     )
 
     data = table.to_pandas()
