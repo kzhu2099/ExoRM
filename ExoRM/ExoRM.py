@@ -114,7 +114,6 @@ class ForecasterRM:
 class ExoRM:
     def __init__(self, model, x, y):
         self.model = model
-        self.model = self.model
         self.x = x
         self.y = y
 

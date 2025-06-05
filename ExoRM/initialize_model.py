@@ -32,14 +32,8 @@ def initialize_model():
     model = ExoRM(model, x, y)
     model.create_error_model()
 
-    x_smooth = numpy.linspace(-0.5, 2, 10000)
+    x_smooth = numpy.linspace(-1, 2, 10000)
     y_smooth = model(x_smooth)
-
-    min_crossing = x_smooth[numpy.argmin(numpy.abs(y_smooth - ForecasterRM.terran(x_smooth)))]
-    max_crossing = x_smooth[numpy.argmin(numpy.abs(y_smooth - ForecasterRM.stellar(x_smooth)))]
-
-    # model.override_min(min_crossing, model(min_crossing))
-    # model.override_max(max_crossing, model(max_crossing))
 
     y_smooth = model(x_smooth)
     e_smooth = model.error(x_smooth)
