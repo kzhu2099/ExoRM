@@ -49,8 +49,8 @@ def get_data():
     ) / 4
 
     data = data.groupby('pl_name', group_keys = False).apply(
-        lambda g: g[g['pl_pubdate'] >= '2010-01'].loc[g[g['pl_pubdate'] >= '2010-01']['error'].idxmin()]
-        if (g['pl_pubdate'] >= '2010-01').any()
+        lambda g: g[g['pl_pubdate'] >= '2010'].loc[g[g['pl_pubdate'] >= '2010']['error'].idxmin()]
+        if (g['pl_pubdate'] >= '2010').any()
         else g.loc[g['error'].idxmin()]
     )
 
