@@ -17,8 +17,8 @@ def get_data():
 
     table = NasaExoplanetArchive.query_criteria(
         table = 'PS',
-        select = 'pl_name, pl_bmasse, pl_rade, disc_year, pl_controv_flag, pl_bmasseerr1, pl_bmasseerr2, pl_radeerr1, pl_radeerr2, soltype',
-        where = '''soltype='Published Confirmed' AND pl_bmasse IS NOT NULL AND pl_rade IS NOT NULL AND disc_year >= 2000 AND pl_controv_flag = 0'''
+        select = 'pl_name, pl_bmasse, pl_rade, pl_pubdate, pl_controv_flag, pl_bmasseerr1, pl_bmasseerr2, pl_radeerr1, pl_radeerr2, soltype',
+        where = '''soltype='Published Confirmed' AND pl_bmasse IS NOT NULL AND pl_rade IS NOT NULL AND pl_pubdate >= '2000-01' AND pl_controv_flag = 0'''
     )
 
     data = table.to_pandas()
@@ -49,16 +49,16 @@ def get_data():
     ) / 4
 
     data = data.groupby('pl_name', group_keys = False).apply(
-        lambda g: g[g['disc_year'] > 2010].loc[g[g['disc_year'] > 2010]['error'].idxmin()]
-        if (g['disc_year'] > 2010).any()
+        lambda g: g[g['pl_pubdate'] >= '2010-01'].loc[g[g['pl_pubdate'] >= '2010-01']['error'].idxmin()]
+        if (g['pl_pubdate'] >= '2010-01').any()
         else g.loc[g['error'].idxmin()]
     )
 
-    # data = data.sort_values(by = ['pl_name', 'disc_year'], ascending = [True, False])
+    # data = data.sort_values(by = ['pl_name', 'pl_pubdate'], ascending = [True, False])
     # data = data.drop_duplicates(subset = 'pl_name').reset_index(drop = True)
 
     data['radius'] = data['pl_rade']
     data['mass'] = data['pl_bmasse']
     data['name'] = data['pl_name']
-    rm = data[['name', 'radius', 'mass', 'error', 'disc_year']]
+    rm = data[['name', 'radius', 'mass', 'error', 'pl_pubdate']]
     rm.to_csv(get_exorm_filepath('exoplanet_rm.csv'), index = False)
