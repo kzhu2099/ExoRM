@@ -54,7 +54,8 @@ class ForecasterRM:
         y = numpy.zeros_like(x)
 
         y = numpy.where(x < numpy.log10(1.23), cls.terran(x), y)
-        y = numpy.where((x >= numpy.log10(1.23)) & (x < numpy.log10(14.3)), cls.neptunian(x), y)
+        y = numpy.where((x >= numpy.log10(1.23)) & (x < numpy.log10(11.1)), cls.neptunian(x), y)
+        y = numpy.where((x >= numpy.log10(11.1)) & (x < numpy.log10(14.3)), numpy.nan, y)
         y = numpy.where(x >= numpy.log10(14.3), cls.stellar(x), y)
 
         if not cls.log_mode:
