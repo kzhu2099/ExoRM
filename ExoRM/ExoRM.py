@@ -122,15 +122,15 @@ class ExoRM:
         self.x_min, self.x_max, self.y_min, self.y_max = None, None, None, None
 
     def create_error_model(self):
-        self.variances = (self.residuals ** 2)
-        self.params, _ = curve_fit(self.error_model, self.x, self.variances, p0 = [1, 1], maxfev = 10000)
+        self.squared_errors = self.residuals ** 2
+        self.params, _ = curve_fit(self.error_model, self.x, self.squared_errors, p0 = [1, 1], maxfev = 10000)
 
     def error_model(self, x, a, b):
         return a * (b ** x)
 
     def error(self, x):
         x_min, x_max = numpy.min(self.x), numpy.max(self.x)
-        base_sigma = numpy.sqrt(self.error_model(x, *self.params))
+        base_sigma = numpy.sqrt(self.error_model(x, *self.params)) # standard deviation of the errors
 
         distance = numpy.where(
             x < x_min, x_min - x,
@@ -139,7 +139,7 @@ class ExoRM:
 
         inflation = numpy.clip(distance + 1, 1, 2) # increases base uncertainty
 
-        return 2 * base_sigma * inflation
+        return 2 * base_sigma * inflation # prediction interval
 
     def linear_error(self, linear_x):
         y = self.error(numpy.log10(linear_x))
