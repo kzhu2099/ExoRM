@@ -20,9 +20,9 @@ def initialize_model(degree = 1, iterations = 100, n_s_values = 50, s_value_rang
     w = numpy.diff(x)
     w = numpy.append(w, w[-1])
 
-    window = 50
+    window = 100
     w = numpy.convolve(w, numpy.ones(window) / window, mode = 'same')
-    w *= 1 - data['error']
+    w *= 1 - (data['error'])
     w /= numpy.mean(w)
 
     n = len(x)
@@ -31,10 +31,10 @@ def initialize_model(degree = 1, iterations = 100, n_s_values = 50, s_value_rang
     split = 0.9
     result = []
 
-    def create_model(x, y, w, s):
+    def create_model_fast(x, y, w, s):
         model = UnivariateSpline(x, y, k = degree, s = s, w = w)
         model = ExoRM(model, x, y)
-        model.create_error_model()
+
         return model
 
     for _ in range(iterations):
@@ -52,7 +52,7 @@ def initialize_model(degree = 1, iterations = 100, n_s_values = 50, s_value_rang
 
         best_s, best_mape = numpy.inf, numpy.inf
         for s in s_values:
-            model = create_model(xt, yt, wt, s * split)
+            model = create_model_fast(xt, yt, wt, s * split)
             mape = numpy.mean(wv * (yv - model(xv)) ** 2)
 
             if mape < best_mape:
@@ -61,8 +61,8 @@ def initialize_model(degree = 1, iterations = 100, n_s_values = 50, s_value_rang
 
         result.append(best_s)
 
-    best_s = numpy.median(result) * 1.05
-    print(f'Final s value (increased by 5% to reduce overfitting): {best_s}')
+    best_s = numpy.median(result)
+    print(f'Final s value: {best_s}')
 
     model = UnivariateSpline(x, y, k = degree, s = best_s, w = w)
     model = ExoRM(model, x, y)
