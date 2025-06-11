@@ -20,8 +20,8 @@ def initialize_model(degree = 1, iterations = 100, n_s_values = 50, s_value_rang
     w = numpy.diff(x)
     w = numpy.append(w, w[-1])
 
-    window = 100
-    w = numpy.convolve(w, numpy.ones(window) / window, mode = 'same')
+    window = 101
+    w = numpy.convolve(w, numpy.ones(window) / window, mode = 'same') # using edge-padding makes the edges have too much weight
     w *= 1 - (data['error'])
     w /= numpy.mean(w)
 
@@ -61,8 +61,8 @@ def initialize_model(degree = 1, iterations = 100, n_s_values = 50, s_value_rang
 
         result.append(best_s)
 
-    best_s = numpy.median(result)
-    print(f'Final s value: {best_s}')
+    best_s = numpy.median(result) * 1.01
+    print(f'Final s value (increased by 1% to prevent overfitting): {best_s}')
 
     model = UnivariateSpline(x, y, k = degree, s = best_s, w = w)
     model = ExoRM(model, x, y)
