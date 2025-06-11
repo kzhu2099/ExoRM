@@ -1,8 +1,7 @@
-def initialize_model():
-    DEGREE = 1
-
+def initialize_model(degree = 1, iterations = 100, n_s_values = 50, s_value_range_factor = [1 / 10, 1 / 6]):
     import matplotlib.pyplot as plot
     import numpy
+    import pandas
     plot.style.use('seaborn-v0_8-whitegrid')
 
     from scipy.interpolate import UnivariateSpline
@@ -12,9 +11,6 @@ def initialize_model():
     data = unique_radius(data)
     data = preprocess_data(data)
 
-    recommended = round((len(data) / 1000) * 115)
-    SMOOTHING = int(input(f'Recommended value: {recommended}. Enter smoothing amount (see README): '))
-
     x = data['radius']
     y = data['mass']
 
@@ -23,16 +19,56 @@ def initialize_model():
 
     w = numpy.diff(x)
     w = numpy.append(w, w[-1])
-    w = numpy.sqrt(w)
-    w /= numpy.mean(w)
-    w *= 1 - data['error']
-    # w = numpy.where((x > 0.75) & (x < 1.25), w * 0.1, w)
 
-    model = UnivariateSpline(x, y, k = DEGREE, s = SMOOTHING, w = w)
+    window = 50
+    w = numpy.convolve(w, numpy.ones(window) / window, mode = 'same')
+    w *= 1 - data['error']
+    w /= numpy.mean(w)
+
+    n = len(x)
+    s_values = numpy.linspace(n * s_value_range_factor[0], n * s_value_range_factor[1], n_s_values)
+
+    split = 0.9
+    result = []
+
+    def create_model(x, y, w, s):
+        model = UnivariateSpline(x, y, k = degree, s = s, w = w)
+        model = ExoRM(model, x, y)
+        model.create_error_model()
+        return model
+
+    for _ in range(iterations):
+        mask = numpy.zeros(n, dtype = bool)
+        i = numpy.sort(numpy.random.default_rng().choice(n, int(n * split), replace = False))
+        mask[i] = True
+
+        xt = x[mask]
+        yt = y[mask]
+        wt = w[mask]
+
+        xv = x[~mask]
+        yv = y[~mask]
+        wv = w[~mask]
+
+        best_s, best_mape = numpy.inf, numpy.inf
+        for s in s_values:
+            model = create_model(xt, yt, wt, s * split)
+            mape = numpy.mean(wv * (yv - model(xv)) ** 2)
+
+            if mape < best_mape:
+                best_mape = mape
+                best_s = s
+
+        result.append(best_s)
+
+    best_s = numpy.median(result) * 1.05
+    print(f'Final s value (increased by 5% to reduce overfitting): {best_s}')
+
+    model = UnivariateSpline(x, y, k = degree, s = best_s, w = w)
     model = ExoRM(model, x, y)
     model.create_error_model()
 
-    x_smooth = numpy.linspace(-1, 2, 10000)
+    x_smooth = numpy.linspace(min(x) - 0.1, max(x) + 0.1, 10000)
     y_smooth = model(x_smooth)
 
     y_smooth = model(x_smooth)

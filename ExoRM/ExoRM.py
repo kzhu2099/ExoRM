@@ -119,7 +119,6 @@ class ExoRM:
         self.y = y
 
         self.residuals = self.y - self.model(self.x)
-        self.x_min, self.x_max, self.y_min, self.y_max = None, None, None, None
 
     def create_error_model(self):
         self.squared_errors = self.residuals ** 2
@@ -146,23 +145,9 @@ class ExoRM:
 
         return numpy.power(10, y)
 
-    def override_min(self, x_min, y_min):
-        self.x_min = x_min
-        self.y_min = y_min
-
-    def override_max(self, x_max, y_max):
-        self.x_max = x_max
-        self.y_max = y_max
-
     def __call__(self, x):
         values = self.model(x)
         ForecasterRM.log_mode = True
-
-        if self.x_min is not None:
-            values = numpy.where(x < self.x_min, ForecasterRM.terran(x), values)
-
-        if self.x_max is not None:
-            values = numpy.where(x > self.x_max, ForecasterRM.stellar(x), values)
 
         return values
 
