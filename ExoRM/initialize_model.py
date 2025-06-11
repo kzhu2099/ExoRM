@@ -1,4 +1,4 @@
-def initialize_model(degree = 1, iterations = 100, n_s_values = 50, s_value_range_factor = [1 / 10, 1 / 6]):
+def initialize_model(degree = 1, iterations = 500, n_s_values = 50, s_value_range_factor = [1 / 12, 1 / 6]):
     import matplotlib.pyplot as plot
     import numpy
     import pandas
