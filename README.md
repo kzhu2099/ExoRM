@@ -7,11 +7,6 @@
 
 Author: Kevin Zhu
 
-NOTE: As of June 2, 2025, the optimal SMOOTHING parameter is ~111, and it will only increase.
-A rough estimate you may use is:
-(Length of dataset / 1000) * 115, which is what the recommended value is.
-Feel free to change this number if you find it is not smooth / too smooth.
-
 ## Features
 
 - continuous radius-mass relationship
@@ -23,7 +18,7 @@ Feel free to change this number if you find it is not smooth / too smooth.
 
 To install ExoRM, use pip: ```pip install ExoRM```.
 
-However, many prefer to use a virtual environment.
+However, many prefer to use a virtual environment (or any of their preferred choice).
 
 macOS / Linux:
 
@@ -63,11 +58,9 @@ deactivate # when you are completely done
 
 ## Usage
 
-To first begin using ExoRM, the data and model must be initialized. This is due to the constant discovery of new exoplanets, adding to the data.
+To first begin using ExoRM, the data and model must be initialized. This is due to the constant discovery of new exoplanets, adding to the data. You may also call these at any time to update the model.
 
-Furthermore, this requires periodic updating to include the most recent information.
-
-Simply run `get_data()` and `initialize_model()`. Note: import those by using `from ExoRM.get_data import get_data()` and `from ExoRM.initialize_model() import initialize_model()`. initialization requires a smoothing amount, which is set to 280 (SEE NOTE) but should be increased when there is more data. A plot of the model will be shown for you to see. Both are stored in your OS's Application Data for ExoRM. ExoRM provides built in functions to retrieve from this folder.
+Simply run `get_data()` and `initialize_model()`. Note: import those by using `from ExoRM.get_data import get_data()` and `from ExoRM.initialize_model() import initialize_model()`. A plot of the model will be shown for you to see. Both are stored in your OS's Application Data for ExoRM. ExoRM provides built in functions to retrieve from this folder.
 
 To use the model, call `ExoRM.load_model()` which returns the model from the filepath. If you wish, you may use `model.save(...)` to save it to your own directory.
 
@@ -75,9 +68,7 @@ Note that all files saved are located in `/Users/<username>/Library/Application 
 
 The model supports log10 and linear scale in earth radii. When using the `model([...]), .__call__([...]), or .predict([...])`, the log10 scale is used. Linear predictions are used in `.predict_linear([...])`.
 
-The high amount of uncertainty can be accessed from ExoRM. We used another Univariate spline to calculate error (abs(residuals)). Also, this spline has the same degree as what you input at the beginning but half the smoothing. Because there is high overfitting near the edges of the data, the top 99th percentile is removed. Generally, the log error increase as the log radius increases. Estimate the error by using `model.error([...])` and `model.linear_error([...])`. Note that this values is the second standard deviation at a point, calculated by multiplying the spline error by the sqrt of pi / 2.
-
-ExoRM's data limitations required overrides for certain areas. By default, `override_min()` and `override_max()` are set to the inverse power law relationship found by Chen and kipping (2017). The transition points to those are smooth and are calculated to be the closest intersection between the model and the relationship.
+The high amount of uncertainty can be accessed from ExoRM. An exponential curve fit is used to estimate the squared errors, and square root of the model at any point is the RMSE (standard deviation of the errors). Generally, the log error increases as the log radius increases. Estimate the error by using `model.error([...])` and `model.linear_error([...])`, which returns the 2nd standard deviation, with a smooth transition to the 3rd during extrapolations.
 
 An example is seen in the `example.ipynb`. Deep analysis is seen in `comparison.ipynb`, showing statistical results and a comparison with Forecaster.
 
