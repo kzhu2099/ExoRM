@@ -1,5 +1,7 @@
 # ExoRM
 
+ExoRM is a model for the mass of an exoplanet given the radius
+
 - HomePage: https://github.com/kzhu2099/ExoRM
 - Issues: https://github.com/kzhu2099/ExoRM/issues
 
