@@ -9,20 +9,26 @@ from scipy.optimize import curve_fit
 def get_exorm_filepath(relative_filepath):
     return os.path.join(user_data_dir('ExoRM'), relative_filepath)
 
-def load_model():
-    path = get_exorm_filepath('radius_mass_model.pkl')
+def load_model(path = None, relative_filepath = 'radius_mass_model.pkl'):
+    if path is None:
+        path = get_exorm_filepath(relative_filepath)
+
     model = ExoRM.load(path)
 
     return model
 
-def read_rm_data():
-    path = get_exorm_filepath('exoplanet_rm.csv')
+def read_rm_data(path = None, relative_filepath = 'exoplanet_rm.csv'):
+    if path is None:
+        path = get_exorm_filepath(relative_filepath)
+
     data = pandas.read_csv(path)
 
     return data
 
-def read_exoplanet_data():
-    path = get_exorm_filepath('exoplanet_data.csv')
+def read_exoplanet_data(path = None, relative_filepath = 'exoplanet_data.csv'):
+    if path is None:
+        path = get_exorm_filepath(relative_filepath)
+
     data = pandas.read_csv(path)
 
     return data
@@ -122,14 +128,14 @@ class ExoRM:
 
     def create_error_model(self):
         self.squared_errors = self.residuals ** 2
-        self.params, _ = curve_fit(self.error_model, self.x, self.squared_errors, p0 = [1, 1], maxfev = 10000)
+        self.params, _ = curve_fit(self._error_model, self.x, self.squared_errors, p0 = [1, 1], maxfev = 10000)
 
-    def error_model(self, x, a, b):
+    def _error_model(self, x, a, b):
         return a * (b ** x)
 
     def error(self, x):
         x_min, x_max = numpy.min(self.x), numpy.max(self.x)
-        base_sigma = numpy.sqrt(self.error_model(x, *self.params)) # standard deviation of the errors
+        base_sigma = numpy.sqrt(self._error_model(x, *self.params)) # standard deviation of the errors
 
         distance = numpy.where(
             x < x_min, x_min - x,

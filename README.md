@@ -14,7 +14,8 @@ Author: Kevin Zhu
 - continuous radius-mass relationship
 - smooth with lower residuals
 - simple usage, log10 and linear
-- best-fit for Terran, Neptunian, and Jovian
+- method to create your own model
+- prediction interval
 
 ## Installation
 
@@ -73,6 +74,13 @@ The model supports log10 and linear scale in earth radii. When using the `model(
 The high amount of uncertainty can be accessed from ExoRM. An exponential curve fit is used to estimate the squared errors, and square root of the model at any point is the RMSE (standard deviation of the errors). Generally, the log error increases as the log radius increases. Estimate the error by using `model.error([...])` and `model.linear_error([...])`, which returns the 2nd standard deviation, with a smooth transition to the 3rd during extrapolations.
 
 An example is seen in the `example.ipynb`. Deep analysis is seen in `comparison.ipynb`, showing statistical results and a comparison with Forecaster.
+
+## Additional notes
+
+ExoRM has an implementation of Forecaster for according to the NASA Exoplanet Archive.
+
+Forecaster: https://github.com/chenjj2/forecaster
+NASA Exoplanet Archive implementation: https://exoplanetarchive.ipac.caltech.edu/docs/pscp_calc.html
 
 ## License
 

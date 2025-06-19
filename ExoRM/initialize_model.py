@@ -1,7 +1,6 @@
-def initialize_model(degree = 1, iterations = 500, n_s_values = 50, s_value_range_factor = [1 / 12, 1 / 6]):
+def initialize_model(degree = 1, iterations = 500, n_s_values = 50, s_value_range_factor = [1 / 12, 1 / 6], *, weight_conv_window = 101, val_split = 0.1, s_value_increase = 1.01):
     import matplotlib.pyplot as plot
     import numpy
-    import pandas
     plot.style.use('seaborn-v0_8-whitegrid')
 
     from scipy.interpolate import UnivariateSpline
@@ -20,7 +19,7 @@ def initialize_model(degree = 1, iterations = 500, n_s_values = 50, s_value_rang
     w = numpy.diff(x)
     w = numpy.append(w, w[-1])
 
-    window = 101
+    window = weight_conv_window
     w = numpy.convolve(w, numpy.ones(window) / window, mode = 'same') # using edge-padding makes the edges have too much weight
     w *= 1 - (data['error'])
     w /= numpy.mean(w)
@@ -28,7 +27,7 @@ def initialize_model(degree = 1, iterations = 500, n_s_values = 50, s_value_rang
     n = len(x)
     s_values = numpy.linspace(n * s_value_range_factor[0], n * s_value_range_factor[1], n_s_values)
 
-    split = 0.9
+    split = 1 - val_split
     result = []
 
     def create_model_fast(x, y, w, s):
@@ -61,7 +60,7 @@ def initialize_model(degree = 1, iterations = 500, n_s_values = 50, s_value_rang
 
         result.append(best_s)
 
-    best_s = numpy.median(result) * 1.01
+    best_s = numpy.median(result) * s_value_increase
     print(f'Final s value (increased by 1% to prevent overfitting): {best_s}')
 
     model = UnivariateSpline(x, y, k = degree, s = best_s, w = w)
@@ -82,3 +81,5 @@ def initialize_model(degree = 1, iterations = 500, n_s_values = 50, s_value_rang
     plot.show()
 
     model.save(get_exorm_filepath('radius_mass_model.pkl'))
+
+    return model
