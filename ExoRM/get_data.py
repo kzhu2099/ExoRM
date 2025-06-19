@@ -40,7 +40,7 @@ def get_data(*, data_error_filter = {'MEF': 0.25, 'REF': 0.1, 'MEF_EDGE': 0.5, '
 
     data.to_csv(get_exorm_filepath('exoplanet_data.csv'), index = False)
 
-    data['error'] = (
+    data['error_score'] = (
         abs(data['pl_bmasseerr1'] / data['pl_bmasse']) +
         abs(data['pl_bmasseerr2'] / data['pl_bmasse']) +
         abs(data['pl_radeerr1'] / data['pl_rade']) +
@@ -48,15 +48,15 @@ def get_data(*, data_error_filter = {'MEF': 0.25, 'REF': 0.1, 'MEF_EDGE': 0.5, '
     ) / 4
 
     data = data.groupby('pl_name', group_keys = False).apply(
-        lambda g: g[g['pl_pubdate'] >= '2010'].loc[g[g['pl_pubdate'] >= '2010']['error'].idxmin()]
+        lambda g: g[g['pl_pubdate'] >= '2010'].loc[g[g['pl_pubdate'] >= '2010']['error_score'].idxmin()]
         if (g['pl_pubdate'] >= '2010').any()
-        else g.loc[g['error'].idxmin()]
+        else g.loc[g['error_score'].idxmin()]
     )
 
     data['radius'] = data['pl_rade']
     data['mass'] = data['pl_bmasse']
     data['name'] = data['pl_name']
-    rm = data[['name', 'radius', 'mass', 'error', 'pl_pubdate']]
+    rm = data[['name', 'radius', 'mass', 'error_score', 'pl_pubdate']]
 
     rm.to_csv(get_exorm_filepath('exoplanet_rm.csv'), index = False)
 

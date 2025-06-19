@@ -21,7 +21,7 @@ def initialize_model(degree = 1, iterations = 500, n_s_values = 50, s_value_rang
 
     window = weight_conv_window
     w = numpy.convolve(w, numpy.ones(window) / window, mode = 'same') # using edge-padding makes the edges have too much weight
-    w *= 1 - (data['error'])
+    w *= 1 - (data['error_score'])
     w /= numpy.mean(w)
 
     n = len(x)
