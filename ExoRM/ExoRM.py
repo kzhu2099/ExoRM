@@ -28,6 +28,12 @@ def read_exoplanet_data(path = None, relative_filepath = 'exoplanet_data.csv'):
 
     return data
 
+def save_data_to_other(new_path, relative_filepath = 'exoplanet_data.csv'):
+    pandas.read_csv(get_exorm_filepath(relative_filepath)).to_csv(new_path, index = False)
+
+def save_rm_to_other(new_path, relative_filepath = 'exoplanet_rm.csv'):
+    pandas.read_csv(get_exorm_filepath(relative_filepath)).to_csv(new_path, index = False)
+
 def unique_radius(data):
     counts = []
     for i in range(len(data['radius'])):
@@ -82,21 +88,18 @@ def init_model(model_type = 'nn', inputs_save_path = None):
             eta = pm.HalfNormal('eta', sigma = 1)
             cov_func = eta ** 2 * pm.gp.cov.ExpQuad(input_dim = 1, ls = ell)
 
-            input_range_x = [data['x_obs'].min(), data['x_obs'].max()]
-            m_basis_f = [20]
-
-            gp_f = HSGP(m = m_basis_f, L = input_range_x, cov_func = cov_func, mean_func = mean_func)
+            # Changed from HSGP to pm.gp.GP
+            gp_f = pm.gp.Latent(cov_func = cov_func, mean_func = mean_func)
 
             _x_true = pm.Normal('_x_true', mu = x_data, sigma = x_err_data, shape = n)
-            f = gp_f.prior('f', X = _x_true[:, None])
+            f = gp_f.prior('f', X = _x_true[:, None]) # X needs to be 2D, so _x_true[:, None]
 
             ell_sigma = pm.HalfNormal('ell_sigma', sigma = 1)
             eta_sigma = pm.HalfNormal('eta_sigma', sigma = 1)
             cov_func_sigma = eta_sigma ** 2 * pm.gp.cov.ExpQuad(input_dim = 1, ls = ell_sigma)
 
-            m_basis_sigma = [20]
-
-            gp_sigma = HSGP(m = m_basis_sigma, L = input_range_x, cov_func = cov_func_sigma, mean_func = mean_func)
+            # Changed from HSGP to pm.gp.GP
+            gp_sigma = pm.gp.Latent(cov_func = cov_func_sigma, mean_func = mean_func)
 
             log_sigma_intrinsic = gp_sigma.prior('log_sigma_intrinsic', X = _x_true[:, None])
             sigma_intrinsic = pm.Deterministic('sigma_intrinsic', pt.exp(log_sigma_intrinsic))
@@ -104,7 +107,7 @@ def init_model(model_type = 'nn', inputs_save_path = None):
 
             nu = pm.HalfNormal('nu', sigma = 10)
             _y_true = pm.StudentT('y_true', nu = nu, mu = f, sigma = sigma_total, observed = y_data)
-            y_pred = pm.StudentT('y_pred', nu = nu, mu = f, sigma = sigma_total, shape = n) # used studentT for outliers
+            y_pred = pm.StudentT('y_pred', nu = nu, mu = f, sigma = sigma_total, shape = n)
 
     elif model_type == 'nn':
         with pm.Model() as model:
@@ -122,17 +125,25 @@ def init_model(model_type = 'nn', inputs_save_path = None):
 
             # First NN layer parameters for f
             n_hidden = 4
-            w1 = pm.Normal('w1', 0, 1, shape=(1, n_hidden))
-            b1 = pm.Normal('b1', 0, 1, shape=(n_hidden,))
-            w2 = pm.Normal('w2', 0, 1, shape=(n_hidden, 1))
+            w1_std = numpy.sqrt(2 / 1) # Kaiming / He initialization
+            w1 = pm.Normal('w1', 0, w1_std, shape=(1, n_hidden))
+            b1 = pm.Normal('b1', 0, 1, shape=(n_hidden,)) # Biases often still use small std
+
+            # For w2: input_dim = n_hidden, output_dim = 1
+            w2_std = numpy.sqrt(2 / n_hidden)
+            w2 = pm.Normal('w2', 0, w2_std, shape=(n_hidden, 1))
             b2 = pm.Normal('b2', 0, 1, shape=(1,))
 
             f = nn_forward(x_in, w1, b1, w2, b2)
 
-            # Neural network for log intrinsic noise (keep as is)
-            w1s = pm.Normal('w1s', 0, 1, shape=(1, n_hidden))
+            # --- Neural network for log intrinsic noise (apply He initialization principle) ---
+            # Same logic for w1s, b1s, w2s, b2s
+            w1s_std = numpy.sqrt(2 / 1)
+            w1s = pm.Normal('w1s', 0, w1s_std, shape=(1, n_hidden))
             b1s = pm.Normal('b1s', 0, 1, shape=(n_hidden,))
-            w2s = pm.Normal('w2s', 0, 1, shape=(n_hidden, 1))
+
+            w2s_std = numpy.sqrt(2 / n_hidden)
+            w2s = pm.Normal('w2s', 0, w2s_std, shape=(n_hidden, 1))
             b2s = pm.Normal('b2s', 0, 1, shape=(1,))
 
             log_sigma_intrinsic = nn_forward(x_in, w1s, b1s, w2s, b2s)
@@ -223,14 +234,14 @@ class ExoRM:
         self.model = init_model(model_type)
         self.model_type = model_type
 
-    def create_trace(self, x_obs, x_err, y_true, y_err, inputs_save_path = None, trace_path = None, *, draw = 1000, tune = 3000, chains = 4, cores = 4, target_accept = 0.95, max_treedepth = 10, progressbar = True):
+    def create_trace(self, x_obs, x_err, y_true, y_err, inputs_save_path = None, trace_path = None, *, draw = 1000, tune = 2000, chains = 4, cores = 4, target_accept = 0.99, max_treedepth = 10, progressbar = True):
         if trace_path is None:
             trace_path = get_exorm_filepath('trace.nc')
 
         self.model = init_train_model(x_obs, x_err, y_true, y_err, model_type = self.model_type, inputs_save_path = inputs_save_path)
 
         with self.model:
-            self.trace = pm.sample(draws = draw, tune = tune, chains = chains, cores = cores, target_accept = target_accept, max_treedepth = max_treedepth, idata_kwargs = {'log_likelihood': True}, progressbar = progressbar)
+            self.trace = pm.sample(draws = draw, tune = tune, init = 'advi+adapt_diag', chains = chains, cores = cores, target_accept = target_accept, max_treedepth = max_treedepth, idata_kwargs = {'log_likelihood': True}, progressbar = progressbar)
 
         self.save_trace(trace_path)
 

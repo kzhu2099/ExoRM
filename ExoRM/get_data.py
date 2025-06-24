@@ -1,8 +1,9 @@
-def get_data(*, data_error_filter = {'MEF': 0.25, 'REF': 0.1, 'MEF_EDGE': 0.5, 'REF_EDGE': 0.2}, edge_percentiles = [10, 90]):
+def get_data(*, data_error_filter = {'MEF': 0.1, 'REF': 0.05, 'MEF_EDGE': 0.2, 'REF_EDGE': 0.1}, edge_percentiles = [10, 90]):
     from astroquery.ipac.nexsci.nasa_exoplanet_archive import NasaExoplanetArchive
     from ExoRM import get_exorm_filepath
     import os
     import numpy
+    import pandas
 
     directory = get_exorm_filepath('ExoRM')
     if not os.path.exists(directory):
@@ -16,7 +17,7 @@ def get_data(*, data_error_filter = {'MEF': 0.25, 'REF': 0.1, 'MEF_EDGE': 0.5, '
 
     table = NasaExoplanetArchive.query_criteria(
         table = 'PS',
-        select = 'pl_name, pl_bmasse, pl_rade, pl_pubdate, pl_controv_flag, pl_bmasseerr1, pl_bmasseerr2, pl_radeerr1, pl_radeerr2, soltype',
+        select = 'pl_name, pl_bmasse, pl_rade, pl_pubdate, pl_controv_flag, pl_bmasseerr1, pl_bmasseerr2, pl_radeerr1, pl_radeerr2, soltype, disc_refname, pl_refname',
         where = '''soltype='Published Confirmed' AND pl_bmasse IS NOT NULL AND pl_rade IS NOT NULL AND pl_controv_flag = 0'''
     )
 
@@ -47,11 +48,16 @@ def get_data(*, data_error_filter = {'MEF': 0.25, 'REF': 0.1, 'MEF_EDGE': 0.5, '
         abs(data['pl_radeerr2'] / data['pl_rade'])
     ) / 4
 
+    data['pl_pubdate'] = pandas.to_datetime(data['pl_pubdate'])
+
     data = data.groupby('pl_name', group_keys = False).apply(
-        lambda g: g[g['pl_pubdate'] >= '2010'].loc[g[g['pl_pubdate'] >= '2010']['error_score'].idxmin()]
-        if (g['pl_pubdate'] >= '2010').any()
-        else g.loc[g['error_score'].idxmin()]
+        lambda g: g[g['pl_pubdate'].dt.year >= 2010].loc[g[g['pl_pubdate'].dt.year >= 2010]['error_score'].idxmin()]
+        if (g['pl_pubdate'].dt.year >= 2010).any()
+        else g.loc[g['error_score'].idxmin()],
+        include_groups = False
     )
+
+    data = data.reset_index()
 
     data['radius'] = data['pl_rade']
     data['mass'] = data['pl_bmasse']
