@@ -1,4 +1,4 @@
-def get_data(*, data_error_filter = {'MEF': 0.1, 'REF': 0.05, 'MEF_EDGE': 0.2, 'REF_EDGE': 0.1}, edge_percentiles = [10, 90]):
+def get_data(*, data_error_filter = {'MEF': 0.25, 'REF': 0.1, 'MEF_EDGE': 0.5, 'REF_EDGE': 0.2}, edge_percentiles = [10, 90]):
     from astroquery.ipac.nexsci.nasa_exoplanet_archive import NasaExoplanetArchive
     from ExoRM import get_exorm_filepath
     import os
