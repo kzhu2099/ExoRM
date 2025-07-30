@@ -1,11 +1,13 @@
 # ExoRM
 
-ExoRM is a model for the mass of an exoplanet given the radius
+`ExoRM` is a model for the mass of an exoplanet given the radius.
+
+Note that the development is tricky; from this package's development, it seems that Chen & Kipping's `forecaster` is suitable for the limited needs.
 
 - HomePage: https://github.com/kzhu2099/ExoRM
 - Issues: https://github.com/kzhu2099/ExoRM/issues
 
-[![PyPI Downloads](https://static.pepy.tech/badge/ExoRM)](https://pepy.tech/projects/ExoRM)
+[![PyPI Downloads](https://static.pepy.tech/badge/ExoRM)](https://pepy.tech/projects/ExoRM) ![PyPI version](https://img.shields.io/pypi/v/ExoRM.svg)
 
 Author: Kevin Zhu
 
@@ -18,7 +20,7 @@ Author: Kevin Zhu
 
 ## Installation
 
-To install ExoRM, use pip: ```pip install ExoRM```.
+To install `ExoRM`, use pip: ```pip install ExoRM```.
 
 However, many prefer to use a virtual environment (or any of their preferred choice).
 
