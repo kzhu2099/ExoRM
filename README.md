@@ -1,90 +1,77 @@
 # ExoRM
 
-`ExoRM` is a model for the mass of an exoplanet given the radius.
+A Python package for estimating exoplanet mass from radius using probabilistic models built with PyMC.
 
-Note that the development is tricky; from this package's development, it seems that Chen & Kipping's `forecaster` is suitable for the limited needs.
-
-- HomePage: https://github.com/kzhu2099/ExoRM
-- Issues: https://github.com/kzhu2099/ExoRM/issues
-
-[![PyPI Downloads](https://static.pepy.tech/badge/ExoRM)](https://pepy.tech/projects/ExoRM) ![PyPI version](https://img.shields.io/pypi/v/ExoRM.svg)
-
-Author: Kevin Zhu
-
-## Features
-
-- continuous radius-mass relationship
-- smooth
-- simple usage, log10 and linear
-- method to create your own model, existing model provided
+**Status:** Experimental; no longer actively developed.
 
 ## Installation
 
-To install `ExoRM`, use pip: ```pip install ExoRM```.
-
-However, many prefer to use a virtual environment (or any of their preferred choice).
-
-macOS / Linux:
-
-```sh
-# make your desired directory
-mkdir /path/to/your/directory
-cd /path/to/your/directory
-
-# setup the .venv (or whatever you want to name it)
-pip install virtualenv
-python3 -m venv .venv
-
-# install ExoRM
-source .venv/bin/activate
-pip install ExoRM
-
-deactivate # when you are completely done
+```bash
+python -m pip install ExoRM
 ```
 
-Windows CMD:
-
-```sh
-# make your desired directory
-mkdir C:path\to\your\directory
-cd C:path\to\your\directory
-
-# setup the .venv (or whatever you want to name it)
-pip install virtualenv
-python3 -m venv .venv
-
-# install ExoRM
-.venv\Scripts\activate
-pip install ExoRM
-
-deactivate # when you are completely done
-```
+Requires Python 3.9 or later.
 
 ## Usage
 
-To first begin using ExoRM, the data and model must be initialized. This is due to the constant discovery of new exoplanets, adding to the data. You may also call these at any time to update the model.
+To fetch the current data from the NASA Exoplanet Archive and fit a model:
 
-There is an existing model created in `best_inputs.pkl` and `best_trace.nc`, simply provide these paths when you are using to avoid creating your own model.
+```python
+from ExoRM import get_data, initialize_model, ExoRM
 
-However, to get your own data and create your own model, simply run `get_data()` and `initialize_model()`. Note: import those by using `from ExoRM.get_data import get_data()` and `from ExoRM.initialize_model() import initialize_model()`. A plot of the model will be shown for you to see. Both are stored in your OS's Application Data for ExoRM. ExoRM provides built in functions to retrieve from this folder.
+get_data()
+initialize_model(kwargs={"cores": 4})
 
-Usage of the model requires initializiation of the class and loading of the trace from a .nc file.
+erm = ExoRM()
+erm.load_trace()
 
-Note that all files saved are located in `/Users/<username>/Library/Application Support/ExoRM` for macOS and `C:\Users\<username>\AppData\Local\ExoRM\ExoRM` for windows.
+# Input: radius in Earth radii
+# Output: estimated mass and lower/upper bounds in Earth masses
+mass, lower, upper = erm.predict_full_linear([1.0])
+```
 
-The model supports log10 and linear scale in earth radii. When using the `model([...]), .__call__([...]), or .predict([...])`, the log10 scale is used. Linear predictions are used in `.predict_linear([...])`.
+**Note:** Fitting a model runs PyMC sampling and may take some time. The fitted model and its inputs are saved in ExoRM's user-data directory.
 
-Uncertainty (upper and lower bounds) can be accessed from `predict_full` and `predict_full_liner`.
+See [`example.ipynb`](example.ipynb) for an example using the model and [`comparison.ipynb`](comparison.ipynb) for comparisons with Forecaster.
 
-An example is seen in the `example.ipynb`. Deep analysis is seen in `comparison.ipynb`, showing statistical results and a comparison with Forecaster. Those use additional libraries for visualization and statistics (seaborn and SciPy).
+## Models
 
-## Additional notes
+The current implementation includes three model types:
 
-ExoRM has an implementation of Forecaster for according to the NASA Exoplanet Archive.
+- `nn`: A probabilistic neural network.
+- `gp`: A Gaussian process.
+- `pwlf`: A piecewise-linear model.
 
-Forecaster: https://github.com/chenjj2/forecaster
-NASA Exoplanet Archive implementation: https://exoplanetarchive.ipac.caltech.edu/docs/pscp_calc.html
+The default model is `nn`. The package also includes `ForecasterRM`, an implementation of the Forecaster mass-radius relationship for comparison.
+
+Predictions are available in logarithmic space through `predict()` and `predict_full()`, or in linear Earth units through `predict_linear()` and `predict_full_linear()`. The latter methods also support uncertainty intervals.
+
+## Repository Contents
+
+| File | Description |
+|---|---|
+| `ExoRM/` | Package implementation |
+| `example.ipynb` | Example usage and predictions |
+| `comparison.ipynb` | Comparison with Forecaster |
+| `probabilistic.ipynb` | Probabilistic model experiments |
+| `exoplanet_data.csv` | Exoplanet data used in the analysis |
+| `best_inputs.pkl` | Saved model inputs |
+| `best_trace.nc` | Saved posterior trace |
+| `best_linear.nc` | Saved trace for the linear model |
+
+Earlier development, including spline experiments, can be found in the Git history.
+
+## Limitations
+
+ExoRM was developed to explore mass-radius modeling and to make the resulting implementation available as a reusable Python package. The comparisons with Forecaster were mixed: ExoRM performed better under some comparisons but had larger errors in others.
+
+The results do not establish that ExoRM is generally more accurate than Forecaster. Use it for exploration and testing rather than as a validated replacement for established models.
+
+## References
+
+- Chen & Kipping, [Forecaster](https://github.com/chenjj2/forecaster)
+- [NASA Exoplanet Archive](https://exoplanetarchive.ipac.caltech.edu/)
 
 ## License
 
-The License is an MIT License found in the LICENSE file.
+MIT License. See [`LICENSE`](LICENSE).
