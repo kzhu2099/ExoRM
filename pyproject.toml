@@ -1,43 +1,56 @@
 [build-system]
-requires = ['setuptools', 'wheel']
+requires = ['setuptools>=77.0.3', 'wheel']
 build-backend = 'setuptools.build_meta'
 
 [project]
 name = 'ExoRM'
+version = '4.0.8'
 
-version = '4.0.6'
+description = 'Experimental probabilistic models for estimating exoplanet masses from radii'
+readme = 'README.md'
+requires-python = '>=3.9'
 
-description = 'a model for the mass of an exoplanet given the radius'
-
-authors = [{name = 'Kevin Zhu'}, {email = 'kzhu2099@gmail.com'}]
-maintainers = [{name = 'Kevin Zhu'}, {email = 'kzhu2099@gmail.com'}]
-
-classifiers = [
-    'Development Status :: 5 - Production/Stable',
-
-    'Intended Audience :: Developers',
-    'Intended Audience :: End Users/Desktop',
-    'Intended Audience :: Science/Research',
-
-    'License :: OSI Approved :: MIT License',
-
-    'Natural Language :: English',
-
-    'Operating System :: OS Independent',
-
-    'Programming Language :: Python :: 3',
+authors = [
+    { name = 'Kevin Zhu', email = 'kzhu2099@gmail.com' },
+]
+maintainers = [
+    { name = 'Kevin Zhu', email = 'kzhu2099@gmail.com' },
 ]
 
-readme = 'README.md'
+license = 'MIT'
+license-files = ['LICENSE']
 
-license = {file = 'LICENSE'}
+keywords = [
+    'exoplanets',
+    'astronomy',
+    'mass-radius relation',
+    'Bayesian inference',
+    'PyMC',
+]
 
-requires-python = '>= 3.9'
+classifiers = [
+    'Development Status :: 3 - Alpha',
+    'Intended Audience :: Science/Research',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python :: 3',
+    'Topic :: Scientific/Engineering :: Astronomy',
+    'Topic :: Scientific/Engineering :: Physics',
+]
 
-dependencies = ['arviz', 'astroquery', 'matplotlib', 'numpy', 'pandas', 'platformdirs', 'pymc', 'pytensor']
+dependencies = [
+    'arviz',
+    'astroquery',
+    'matplotlib',
+    'numpy',
+    'pandas',
+    'platformdirs',
+    'pymc',
+    'pytensor',
+]
 
 [project.urls]
 Homepage = 'https://github.com/kzhu2099/ExoRM'
+Repository = 'https://github.com/kzhu2099/ExoRM'
 Issues = 'https://github.com/kzhu2099/ExoRM/issues'
 
 [tool.setuptools.package-data]
@@ -45,6 +58,3 @@ Issues = 'https://github.com/kzhu2099/ExoRM/issues'
 
 [tool.setuptools.packages.find]
 include = ['ExoRM', 'ExoRM.*']
-
-[tool.setuptools]
-license-files = []
